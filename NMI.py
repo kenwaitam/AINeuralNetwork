@@ -46,7 +46,7 @@ X, Y = read_dataset()
 
 # split the dataset into train and test part
 train_x, test_x, train_y, test_y = train_test_split(
-    X, Y, test_size=0.13986013986013987, random_state=415)
+    X, Y, test_size=0.13986013986013987)
 
 # inspect the training and testing sets
 print(train_x.shape)
