@@ -54,10 +54,10 @@ sgd = SGD(lr=0.01)
 rmsprop = RMSprop(lr=0.01)
 
 # Compile model
-model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['binary_accuracy', 'categorical_accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer=adam, metrics=['binary_accuracy', 'categorical_accuracy'])
 
 # Fit/train the model
-model.fit(train_x, train_y, epochs=200, shuffle=False, batch_size=10, validation_data=(test_x, test_y))
+model.fit(train_x, train_y, epochs=500, shuffle=False, batch_size=10, validation_data=(test_x, test_y))
 
 # evaluate the model
 scores = model.evaluate(test_x, test_y)

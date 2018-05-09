@@ -146,7 +146,7 @@ y = multilayer_pereptron(x, weights, biases)
 # define the cost function(lost function) and optimizer
 cost_function = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=y, labels=y_))
 
-training_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_function)
+training_step = tf.train.AdamOptimizer(learning_rate).minimize(cost_function)
 
 # create a session object and run it
 sess = tf.Session()
@@ -185,25 +185,25 @@ for epoch in range(training_epochs):
     print('epoch : ', epoch, ' - ', 'cost: ', cost,
           ' - MSE: ', mse_, '- Train Accuracy: ', accuracy)
 
-# save it
-save_path = saver.save(sess, model_path)
-print('Model saved in file: %s' % save_path)
+# # save it
+# save_path = saver.save(sess, model_path)
+# print('Model saved in file: %s' % save_path)
 
-# plot mse and accuracy graph
-plt.plot(mse_history, 'r')
-plt.show()
-plt.plot(accuracy_history)
-plt.show()
+# # plot mse and accuracy graph
+# plt.plot(mse_history, 'r')
+# plt.show()
+# plt.plot(accuracy_history)
+# plt.show()
 
-# print the final accuracy
-correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Test Accuracy: ', (sess.run(
-    accuracy, feed_dict={x: test_x, y_: test_y})))
+# # print the final accuracy
+# correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+# accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+# print('Test Accuracy: ', (sess.run(
+#     accuracy, feed_dict={x: test_x, y_: test_y})))
 
-# print the final mean square error
-pred_y = sess.run(y, feed_dict={x: test_x})
-mse = tf.reduce_mean(tf.square(pred_y - test_y))
-print('MSE: %.4f' % sess.run(mse))
+# # print the final mean square error
+# pred_y = sess.run(y, feed_dict={x: test_x})
+# mse = tf.reduce_mean(tf.square(pred_y - test_y))
+# print('MSE: %.4f' % sess.run(mse))
 
 sess.close()
