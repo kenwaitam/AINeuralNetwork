@@ -134,7 +134,7 @@ for key in train_x.keys():
     my_feature_columns.append(tf.feature_column.numeric_column(key=key))
 
 # Build a DNN with 2 hidden layers and 10 nodes in each hidden layer.
-classifier = tf.estimator.LinearClassifier(
+classifier = tf.estimator.DNNClassifier(
     feature_columns=my_feature_columns,
     # Two hidden layers of 10 nodes each.
     optimizer=tf.train.AdamOptimizer(),

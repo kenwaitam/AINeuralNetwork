@@ -10,9 +10,11 @@ import pandas as pd
 # get the data set
 def read_dataset():
     # read the csv and replaces some string to integers
-    df = pd.read_csv("intake.csv").replace(np.nan, -10)
+    df = pd.read_csv("train.csv").replace({np.nan: -10, ' ': ''})
     # all to lower
     df = df.apply(lambda x: x.str.lower() if(x.dtype == 'object') else x)
+
+    df.columns = map(str.lower, df.columns)
 
     # get all input collumn with string
     columns_to_encode = df.drop(['advies', 'studentnummer', 'plaats', 'reden_stoppen', 'voorkeursopleiding'], axis=1).select_dtypes(
@@ -20,18 +22,27 @@ def read_dataset():
     # Converting categorical data into numbers
     df = pd.get_dummies(df, columns=columns_to_encode)
 
+    df.rename(columns={
+              'nadereori�ntatieopeenad-opleidingin�s-hertogenbosch': 'hertogenbosch'}, inplace=True)
+
+    df.columns = [c.replace(' ', '') for c in df.columns]
+    df.columns = [c.replace('+', '') for c in df.columns]
+    df.columns = [c.replace('&', '') for c in df.columns]
+    df.columns = [c.replace(',', '') for c in df.columns]
+    df.columns = [c.replace('(', '') for c in df.columns]
+    df.columns = [c.replace(')', '') for c in df.columns]
+    df.columns = [c.replace('%', '') for c in df.columns]
+    df.columns = [c.replace("'", '') for c in df.columns]
+
     # all the values of the csv
-    X = df[df.drop(['advies', 'studentnummer', 'plaats', 'reden_stoppen', 'voorkeursopleiding'], axis=1).columns[0:192]]
-    
+    X = df[df.drop(['advies', 'studentnummer', 'plaats',
+                    'reden_stoppen', 'voorkeursopleiding'], axis=1).columns[0:192]]
+
     # get the expected output
     y = df[df.columns[3]]
     # encode the output
-    # encoder = LabelEncoder()
-    # encoder.fit(y)
-    # y = encoder.transform(y).reshape(-1, 1)
-    # Y = OneHotEncoder(sparse=False).fit_transform(y)
     Y = pd.get_dummies(y)
-    
+
     return(X, Y)
 
 
@@ -44,7 +55,7 @@ train_x, test_x, train_y, test_y = train_test_split(
 
 # create model
 model = Sequential()
-model.add(Dense(12, input_dim=80, activation='relu'))
+model.add(Dense(12, input_dim=75, activation='relu'))
 model.add(Dense(8, activation='relu'))
 model.add(Dense(3, activation='softmax'))
 
