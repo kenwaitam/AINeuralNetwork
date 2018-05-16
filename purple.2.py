@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 # read the csv and replaces some string to integers
 df = pd.read_csv("intake2.csv").replace({' ': ''})
 
-df = df.fillna(0)
+df = df.fillna(-50)
 
 # all to lower
 df = df.apply(lambda x: x.str.lower() if (x.dtype == 'object') else x)
@@ -58,6 +58,7 @@ X = df[df.drop(['studentnummer', 'plaats', 'jaar',
 # split the dataset into train and test part
 train_x, test_x, train_y, test_y = train_test_split(
     X, y, test_size=0.13986013986013987, shuffle=False)
+
 
 def train_input_fn(features, labels, batch_size):
     """An input function for training"""
@@ -117,8 +118,11 @@ eval_result = classifier.evaluate(
     input_fn=lambda: eval_input_fn(test_x, test_y, 32))
 
 print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
-expected = ['Twijfel']
+
+expected = ['']
+
 SPECIES = ['Negatief', 'Positief', 'Twijfel']
+
 predict_x = {
     'naam_vooropleiding': [10],
     'geslacht': [1],
