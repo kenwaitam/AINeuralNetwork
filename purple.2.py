@@ -59,7 +59,6 @@ X = df[df.drop(['studentnummer', 'plaats', 'jaar',
 train_x, test_x, train_y, test_y = train_test_split(
     X, y, test_size=0.13986013986013987, shuffle=False)
 
-
 def train_input_fn(features, labels, batch_size):
     """An input function for training"""
     # Convert the inputs to a Dataset.
@@ -111,7 +110,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 # Train the Model.
 classifier.train(
     input_fn=lambda: train_input_fn(train_x, train_y, 32),
-    steps=1000)
+    steps=10000)
 
 # Evaluate the model.
 eval_result = classifier.evaluate(
@@ -119,43 +118,43 @@ eval_result = classifier.evaluate(
 
 print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
 
-expected = ['']
+expected = ['Positief']
 
 SPECIES = ['Negatief', 'Positief', 'Twijfel']
 
 predict_x = {
-    'naam_vooropleiding': [10],
-    'geslacht': [1],
-    'was_aanwezig': [1],
+    'naam_vooropleiding': [3],
+    'geslacht': [0],
+    'was_aanwezig': [0],
     'aantal_weigeringen': [0],
-    'gewogen_gemiddelde': [15],
-    'komt_studeren': [0],
+    'gewogen_gemiddelde': [16],
+    'komt_studeren': [1],
     'competenties': [5],
-    'capaciteiten': [6],
+    'capaciteiten': [7],
     'intr.motivatie': [7],
-    'extr.motivatie': [8],
-    'trajectopleiding': [1],
-    'aanmeldenvoorverkortopleidingstraject': [1],
-    'anderonderwerpnamelijk': [1],
-    'bijscholingengels': [1],
-    'chronischeziekte': [0],
+    'extr.motivatie': [6],
+    'is_mbo_deficient': [1],
+    'ondernemenincombinatiemetstudie': [0],
+    'nadereorientatieopeenad-opleidingins-hertogenbosch': [0],
+    'nadereorientatieopeenadopleidinginroosendaal': [0],
+    'persoonlijkbijspijker-advies': [0],
+    'functiebeperkingnamelijk': [1],
     'dyslexie': [0],
-    'extragesprekmetopleiding': [0],
+    'topsportincombinatiemetstudie': [0],
+    'chronischeziekte': [0],
+    'problemenindepersoonlijkesfeer': [0],
+    'anderonderwerpnamelijk': [1],
     'financieleproblemeninrelatietotstuderen': [0],
-    'functiebeperkingnamelijk': [0],
+    'studiekeuze': [0],
+    'extragesprekmetopleiding': [0],
+    'bijscholingengels': [0],
+    'peermentoringspecifiekterondersteuningvanassadhd': [1],
+    'aanmeldenvoorverkortopleidingstraject': [0],
     'hyperrr-peermentoringspecifiekdooropleidingaangeboden': [0],
-    'is_mbo_deficient': [0],
     'mbo-oefenennederlandsetaal': [0],
     'mbo-peermentoringspecifiekterondersteuningvanassadhd': [0],
     'mbo-peermentoringterondersteuninginhetalgemeendoorhogerejaarsstudentvandezelfdeopleiding': [0],
-    'nadereorientatieopeenad-opleidingins-hertogenbosch': [0],
-    'nadereorientatieopeenadopleidinginroosendaal': [0],
-    'ondernemenincombinatiemetstudie': [0],
-    'peermentoringspecifiekterondersteuningvanassadhd': [0],
-    'persoonlijkbijspijker-advies': [0],
-    'problemenindepersoonlijkesfeer': [0],
-    'studiekeuze': [0],
-    'topsportincombinatiemetstudie': [0],
+    'trajectopleiding': [2],
 }
 
 predictions = classifier.predict(
