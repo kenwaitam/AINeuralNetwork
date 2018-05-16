@@ -147,8 +147,8 @@ classifier.train(
     input_fn=lambda: train_input_fn(train_x, train_y, 32),
     steps=1000)
 
-# # Evaluate the model.
-# eval_result = classifier.evaluate(
-#     input_fn=lambda:eval_input_fn(test_x, test_y, 32))
+# Evaluate the model.
+eval_result = classifier.evaluate(
+    input_fn=lambda:eval_input_fn(test_x, test_y, 32))
 
-# print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
+print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
