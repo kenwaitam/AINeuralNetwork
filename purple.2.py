@@ -1,16 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-import os
-import matplotlib.pyplot as plt
-
-import tensorflow as tf
-import tensorflow.contrib.eager as tfe
-import logging
-import numpy as np
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.utils import shuffle
+import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
 # read the csv and replaces some string to integers
@@ -46,8 +37,6 @@ continuous = df.drop(['studentnummer', 'jaar', 'plaats', 'reden_stoppen', 'voork
 CATEGORICAL_COLUMNS = categorical
 CONTINUOUS_COLUMNS = continuous
 
-SURVIVED_COLUMN = "advies"
-
 for col in CATEGORICAL_COLUMNS:
     df[col] = df[col].astype('category')
 
@@ -68,8 +57,7 @@ X = df[df.drop(['studentnummer', 'plaats', 'jaar',
 
 # split the dataset into train and test part
 train_x, test_x, train_y, test_y = train_test_split(
-    X, y, test_size=0.13986013986013987)
-
+    X, y, test_size=0.13986013986013987, shuffle=False)
 
 def train_input_fn(features, labels, batch_size):
     """An input function for training"""
@@ -77,7 +65,7 @@ def train_input_fn(features, labels, batch_size):
     dataset = tf.data.Dataset.from_tensor_slices((dict(features), labels))
 
     # Shuffle, repeat, and batch the examples.
-    dataset = dataset.shuffle(1000).repeat().batch(batch_size)
+    dataset = dataset.repeat().batch(batch_size)
 
     # Return the dataset.
     return dataset
@@ -122,64 +110,59 @@ tf.logging.set_verbosity(tf.logging.INFO)
 # Train the Model.
 classifier.train(
     input_fn=lambda: train_input_fn(train_x, train_y, 32),
-    steps=10000)
+    steps=1000)
 
 # Evaluate the model.
 eval_result = classifier.evaluate(
     input_fn=lambda: eval_input_fn(test_x, test_y, 32))
 
 print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
-
-# Generate predictions from the model
-expected = ['Negatief']
-
-SPECIES = ['Positief', 'Twijfel', 'Negatief']
-
+expected = ['Twijfel']
+SPECIES = ['Negatief', 'Positief', 'Twijfel']
 predict_x = {
-    'naam_vooropleiding': 10,
-    'geslacht': 1,
-    'was_aanwezig': 1,
-    'aantal_weigeringen': 0,
-    'gewogen_gemiddelde': 15,
-    'komt_studeren': 0,
-    'competenties': 5,
-    'capaciteiten': 6,
-    'intr.motivatie': 7,
-    'extr.motivatie': 8,
-    'is_mbo_deficient': 1,
-    'ondernemenincombinatiemetstudie': 0,
-    'nadereorientatieopeenad-opleidingins-hertogenbosch': 0,
-    'nadereorientatieopeenadopleidinginroosendaal': 0,
-    'persoonlijkbijspijker-advies': 0,
-    'functiebeperkingnamelijk': 0,
-    'dyslexie': 0,
-    'topsportincombinatiemetstudie': 0,
-    'chronischeziekte': 0,
-    'problemenindepersoonlijkesfeer': 0,
-    'anderonderwerpnamelijk': 0,
-    'financieleproblemeninrelatietotstuderen': 0,
-    'studiekeuze': 1,
-    'extragesprekmetopleiding': 0,
-    'bijscholingengels': 0,
-    'peermentoringspecifiekterondersteuningvanassadhd': 0,
-    'aanmeldenvoorverkortopleidingstraject': 0,
-    'hyperrr-peermentoringspecifiekdooropleidingaangeboden': 0,
-    'mbo-oefenennederlandsetaal': 0,
-    'mbo-peermentoringspecifiekterondersteuningvanassadhd': 0,
-    'mbo-peermentoringterondersteuninginhetalgemeendoorhogerejaarsstudentvandezelfdeopleiding': 0,
-    'trajectopleiding': 1,
+    'naam_vooropleiding': [10],
+    'geslacht': [1],
+    'was_aanwezig': [1],
+    'aantal_weigeringen': [0],
+    'gewogen_gemiddelde': [15],
+    'komt_studeren': [0],
+    'competenties': [5],
+    'capaciteiten': [6],
+    'intr.motivatie': [7],
+    'extr.motivatie': [8],
+    'trajectopleiding': [1],
+    'aanmeldenvoorverkortopleidingstraject': [1],
+    'anderonderwerpnamelijk': [1],
+    'bijscholingengels': [1],
+    'chronischeziekte': [0],
+    'dyslexie': [0],
+    'extragesprekmetopleiding': [0],
+    'financieleproblemeninrelatietotstuderen': [0],
+    'functiebeperkingnamelijk': [0],
+    'hyperrr-peermentoringspecifiekdooropleidingaangeboden': [0],
+    'is_mbo_deficient': [0],
+    'mbo-oefenennederlandsetaal': [0],
+    'mbo-peermentoringspecifiekterondersteuningvanassadhd': [0],
+    'mbo-peermentoringterondersteuninginhetalgemeendoorhogerejaarsstudentvandezelfdeopleiding': [0],
+    'nadereorientatieopeenad-opleidingins-hertogenbosch': [0],
+    'nadereorientatieopeenadopleidinginroosendaal': [0],
+    'ondernemenincombinatiemetstudie': [0],
+    'peermentoringspecifiekterondersteuningvanassadhd': [0],
+    'persoonlijkbijspijker-advies': [0],
+    'problemenindepersoonlijkesfeer': [0],
+    'studiekeuze': [0],
+    'topsportincombinatiemetstudie': [0],
 }
 
+predictions = classifier.predict(
+    input_fn=lambda: eval_input_fn(predict_x, labels=None,
+                                   batch_size=32))
 
-# predictions = classifier.predict(
-#     input_fn=lambda: eval_input_fn(predict_x, labels=None,
-#                                    batch_size=32))
+template = ('\nPrediction is "{}" ({:.1f}%), expected "{}"')
 
-# template = ('\nPrediction is "{}" ({:.1f}%), expected "{}"')
+for pred_dict, expec in zip(predictions, expected):
+    class_id = pred_dict['class_ids'][0]
+    probability = pred_dict['probabilities'][class_id]
 
-# for pred_dict, expec in zip(predictions, expected):
-#     class_id = pred_dict['class_ids'][0]
-#     probability = pred_dict['probabilities'][class_id]
-
-#     print(template.format(SPECIES[class_id],
-#                           100 * probability, expec))
+    print(template.format(SPECIES[class_id],
+                          100 * probability, expec))
